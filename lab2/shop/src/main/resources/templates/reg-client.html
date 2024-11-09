@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма Регистрации</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .response {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Регистрация</h2>
+    <form id="registrationForm">
+        <input type="text" id="name" name="name" placeholder="Ваше имя" required>
+        <input type="email" id="email" name="email" placeholder="Ваш email" required>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <div class="response" id="responseMessage"></div>
+</div>
+
+<script>
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
+
+        const name = document.getElementById('name').value.trim(); // Удаляем пробелы
+        const email = document.getElementById('email').value.trim(); // Удаляем пробелы
+        const responseMessage = document.getElementById('responseMessage');
+
+        // Проверка на пустые поля
+        if (!name || !email) {
+            responseMessage.innerHTML = '<p class="error">Пожалуйста, заполните все поля.</p>';
+            return; // Прерываем выполнение функции
+        }
+
+        fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                name: name,
+                email: email
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Если регистрация успешна, перенаправляем на другую страницу
+                    window.location.href = 'http://localhost:8080/list-of-tours';
+                } else {
+                    responseMessage.innerHTML = `<p>${data.message}</p>`;
+                    window.location.href = 'http://localhost:8080/list-of-tours';
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                responseMessage.innerHTML = `<p>Произошла ошибка при регистрации.</p>`;
+            });
+    });
+</script>
+
+</body>
+</html>

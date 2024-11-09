@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Туры Туроператора</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .tour-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .tour {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        .tour h3 {
+            margin: 0;
+        }
+        .error {
+            color: red;
+        }
+        .balance {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="tour-container">
+    <h2>Предложения Туроператора</h2>
+    <div class="balance" id="clientBalance">Баланс: 0 руб.</div>
+    <div class="credit" id="clientCredit">Кредит: 0 руб.</div>
+    <button id="loadTours">Загрузить Туры</button>
+    <div id="toursList"></div>
+    <div class="error" id="errorMessage"></div>
+</div>
+
+<script>
+    // Функция для загрузки баланса и кредита клиента
+    function loadClientInfo() {
+        fetch('http://localhost:8080/api/get_client')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сетевая ошибка: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const balanceElement = document.getElementById('clientBalance');
+                const creditElement = document.getElementById('clientCredit');
+                balanceElement.innerText = 'Баланс: ' + data.wallet.money.amount + ' руб.'; // Извлекаем amount из money
+                creditElement.innerText = 'Кредит: ' + data.wallet.credit.amount + ' руб.'; // Извлекаем amount из credit
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('errorMessage').innerText = 'Не удалось загрузить информацию о клиенте: ' + error.message;
+            });
+    }
+
+    // Функция для загрузки туров
+    document.getElementById('loadTours').addEventListener('click', function() {
+        fetch('http://localhost:8080/api/get_tours')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сетевая ошибка: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const toursList = document.getElementById('toursList');
+                toursList.innerHTML = ''; // Очищаем предыдущие данные
+                data.forEach(tour => {
+                    const tourDiv = document.createElement('div');
+                    tourDiv.className = 'tour';
+                    tourDiv.innerHTML = `<h3>${tour.place}</h3><p>Цена: ${tour.price} руб.</p>
+                                        <button class="buyButton" data-place="${tour.place}" data-price="${tour.price}">Купить</button>`;
+                    toursList.appendChild(tourDiv);
+                });
+
+                // Добавляем обработчики событий для кнопок "Купить"
+                document.querySelectorAll('.buyButton').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const place = this.getAttribute('data-place');
+                        const price = parseInt(this.getAttribute('data-price'));
+                        buyTour(place, price);
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('errorMessage').innerText = 'Не удалось загрузить данные: ' + error.message;
+            });
+    });
+
+    // Функция для покупки тура
+    function buyTour(place, price) {
+        fetch('http://localhost:8080/api/buy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                place: place,
+                price: price
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Сетевая ошибка: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Обновляем баланс и кредит
+                const balanceElement = document.getElementById('clientBalance');
+                const creditElement = document.getElementById('clientCredit');
+                balanceElement.innerText = 'Баланс: ' + data.balance + ' руб.';
+                creditElement.innerText = 'Кредит: ' + data.credit + ' руб.';
+                alert(data.message); // Показать сообщение о покупке
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('errorMessage').innerText = 'Не удалось купить тур: ' + error.message;
+            });
+    }
+
+    // Загружаем информацию о клиенте при загрузке страницы
+    loadClientInfo();
+</script>
+
+</body>
+</html>
