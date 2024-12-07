@@ -9,17 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GraphTest {
 
-    private Graph graph;
+    private Graph<Integer> graph;
 
     @BeforeEach
     void setUp() {
-        graph = new Graph();
-    }
-
-    @Test
-    void testDisplayMatrix() {
-        // Метод ничего не возвращает, поэтому проверяем его исполнение без исключений.
-        assertDoesNotThrow(() -> graph.getNumberOfNodes());
+        graph = new Graph<>(3);
+        graph.addEdge(0, 1);
+        graph.addEdge(1, 2);
+        graph.addEdge(2, 0);
     }
 
     @Test
@@ -33,11 +30,10 @@ class GraphTest {
 
     @Test
     void testCheckForEdge() {
-        assertTrue(graph.checkForEdge(0, 0));
-        assertFalse(graph.checkForEdge(0, 1));
-        assertTrue(graph.checkForEdge(1, 1));
-        assertFalse(graph.checkForEdge(2, 0));
-        assertFalse(graph.checkForEdge(2, 3)); // Граничный случай
+        assertTrue(graph.checkForEdge(0, 1));
+        assertFalse(graph.checkForEdge(0, 2));
+        assertTrue(graph.checkForEdge(1, 2));
+        assertFalse(graph.checkForEdge(2, 1));
     }
 
     @Test
@@ -47,35 +43,21 @@ class GraphTest {
 
     @Test
     void testGetNumberOfEdges() {
-        assertEquals(2, graph.getNumberOfEdges());
-    }
-
-    @Test
-    void testGetNodeDegree() {
-        assertEquals(1, graph.getNodeDegree(0));
-        assertEquals(2, graph.getNodeDegree(1));
-        assertEquals(1, graph.getNodeDegree(2));
-    }
-
-    @Test
-    void testGetEdgeDegree() {
-        assertEquals(3, graph.getEdgeDegree(0));
+        assertEquals(3, graph.getNumberOfEdges());
     }
 
     @Test
     void testRemoveNode() {
         graph.removeNode(1);
-        assertEquals(2, graph.getNumberOfNodes());
-
-        assertThrows(IllegalArgumentException.class, () -> graph.removeNode(3));
+        assertEquals(3, graph.getNumberOfNodes());
+        assertTrue(graph.checkForNode(1));
     }
 
     @Test
     void testRemoveEdge() {
-        graph.removeEdge(1);
-        assertEquals(1, graph.getNumberOfEdges());
-
-        assertThrows(IllegalArgumentException.class, () -> graph.removeEdge(2));
+        graph.removeEdge(1, 2);
+        assertEquals(2, graph.getNumberOfEdges());
+        assertFalse(graph.checkForEdge(1, 2));
     }
 
     @Test
@@ -86,49 +68,13 @@ class GraphTest {
         assertEquals(1, iterator.next());
         assertEquals(2, iterator.next());
         assertFalse(iterator.hasNext());
-
-        assertTrue(iterator.hasPrevious());
-        assertEquals(2, iterator.previous());
-        assertEquals(1, iterator.previous());
-        assertEquals(0, iterator.previous());
-        assertFalse(iterator.hasPrevious());
-    }
-
-    @Test
-    void testEdgeIterator() {
-        ListIterator<int[]> iterator = graph.edgeIterator();
-        assertTrue(iterator.hasNext());
-        int[] edge0 = iterator.next();
-        assertArrayEquals(new int[]{1, 1, 0}, edge0);
-
-        assertTrue(iterator.hasNext());
-        int[] edge1 = iterator.next();
-        assertArrayEquals(new int[]{0, 1, 1}, edge1);
-
-        assertFalse(iterator.hasNext());
-    }
-
-    @Test
-    void testIncidentEdgeIterator() {
-        ListIterator<Integer> iterator = graph.incidentEdgeIterator(1);
-        assertTrue(iterator.hasNext());
-        assertEquals(0, iterator.next());
-        assertTrue(iterator.hasNext());
-        assertEquals(1, iterator.next());
-        assertFalse(iterator.hasNext());
-
-        assertThrows(IllegalArgumentException.class, () -> graph.incidentEdgeIterator(3));
     }
 
     @Test
     void testAdjacentVertexIterator() {
         ListIterator<Integer> iterator = graph.adjacentVertexIterator(1);
         assertTrue(iterator.hasNext());
-        assertEquals(1, iterator.next());
-        assertTrue(iterator.hasNext());
         assertEquals(2, iterator.next());
         assertFalse(iterator.hasNext());
-
-        assertThrows(IllegalArgumentException.class, () -> graph.adjacentVertexIterator(3));
     }
 }

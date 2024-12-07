@@ -1,0 +1,17 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+TourAgency,com.touragency,Payment,0,15,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,Insurance,0,15,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,Flight,0,11,0,0,0,4,0,2,0,2
+TourAgency,com.touragency,Wallet,0,31,0,2,0,10,0,5,0,4
+TourAgency,com.touragency,Money,0,15,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,BlockChain,0,17,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,Agency,0,23,0,0,0,8,0,4,0,4
+TourAgency,com.touragency,Transaction,0,15,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,Booking,0,17,0,0,0,5,0,2,0,2
+TourAgency,com.touragency,Cruise,0,11,0,0,0,4,0,2,0,2
+TourAgency,com.touragency,Tour,0,21,0,0,0,8,0,4,0,4
+TourAgency,com.touragency,Main,7,0,0,0,3,0,2,0,2,0
+TourAgency,com.touragency,Client,0,15,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,Transport,0,15,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,Guide,0,15,0,0,0,6,0,3,0,3
+TourAgency,com.touragency,Hotel,0,15,0,0,0,6,0,3,0,3
